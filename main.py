@@ -78,19 +78,19 @@ async def show_queue(interaction: discord.Interaction):
 @bot.tree.command(name="play", description="play music duh")
 async def play_music(interaction: discord.Interaction, song_query: str):
     await interaction.response.defer()
-    voice_channel = interaction.user.voice.channel
-
-    if voice_channel is None:
+    
+    if interaction.user.voice is None or interaction.user.voice.channel is None:
         await interaction.followup.send("You must be in a voice channel")
         msg = await interaction.original_response()
         await cleanup(msg)
         return
-
+    
+    voice_channel = interaction.user.voice.channel
     voice_client = interaction.guild.voice_client
 
     if voice_client is None:
         voice_client = await voice_channel.connect()
-    elif voice_client.channel != voice_channel:  # FIXED: Compare channel to channel
+    elif voice_client.channel != voice_channel:
         await voice_client.move_to(voice_channel)
 
     ydl_options_link = {
